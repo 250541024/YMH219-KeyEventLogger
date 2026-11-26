@@ -1,0 +1,32 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# Derleme çıktıları
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]64/
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# NuGet
+packages/
+*.nupkg
+
+# Test sırasında üretilen kayıt dosyaları
+*.log
+logs/
+KeyEventLog_*.txt
+
+# İşletim sistemi dosyaları
+Thumbs.db
+Desktop.ini
+.DS_Store
