@@ -61,7 +61,7 @@ namespace KeyEventLogger.Models
         public override string ToString()
         {
             string mods = ModifiersText.Length > 0 ? "[" + ModifiersText + "]" : "";
-            return string.Format("{0:HH:mm:ss.fff}  {1,-8}  {2,-16} {3,-6} {4}",
+            return string.Format("{0:HH:mm:ss.fff}  {1,-8}  {2,-18} {3,-6} {4}",
                 Timestamp, EventType, KeyName, CodeText, mods).TrimEnd();
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using KeyEventLogger.Core;
@@ -25,6 +26,9 @@ namespace KeyEventLogger
         private readonly KeyEventRecorder recorder = new KeyEventRecorder();
         private readonly ILogWriter logWriter = new TextFileLogWriter();
 
+        /// <summary>Uygulanan zaman filtresi; null ise tüm kayıtlar gösterilir.</summary>
+        private TimeRangeFilter activeFilter;
+
         public MainForm()
         {
             InitializeComponent();
@@ -34,7 +38,12 @@ namespace KeyEventLogger
             recorder.RecordingStateChanged += Recorder_RecordingStateChanged;
             recorder.RecordsCleared += Recorder_RecordsCleared;
 
+            // Filtre varsayılanı: bugünün tamamı
+            dtpFrom.Value = DateTime.Today;
+            dtpTo.Value = DateTime.Today.AddDays(1).AddSeconds(-1);
+
             UpdateRecordingUi();
+            UpdateStatistics();
         }
 
         // ---------------------------------------------------------------
@@ -75,10 +84,14 @@ namespace KeyEventLogger
 
         private void Recorder_RecordAdded(object sender, KeyEventRecordedEventArgs e)
         {
-            AddToList(e.Record);
+            // Filtre açıksa yalnızca aralığa uyan yeni kayıtlar listeye eklenir
+            if (activeFilter == null || activeFilter.IsMatch(e.Record))
+                AddToList(e.Record);
+
             if (e.Record.EventType != KeyEventType.KeyUp)
                 captureBox.LastKeyText = e.Record.KeyName;
             UpdateCount();
+            UpdateStatistics();
         }
 
         private void Recorder_RecordingStateChanged(object sender, EventArgs e)
@@ -91,6 +104,7 @@ namespace KeyEventLogger
             lstLog.Items.Clear();
             captureBox.LastKeyText = string.Empty;
             UpdateCount();
+            UpdateStatistics();
         }
 
         // ---------------------------------------------------------------
@@ -140,11 +154,14 @@ namespace KeyEventLogger
         /// </summary>
         private bool SaveRecords()
         {
-            var toSave = recorder.Records;
+            // Filtre açıksa ekranda görünen (süzülmüş) kayıtlar kaydedilir
+            IReadOnlyCollection<KeyEventRecord> toSave = GetVisibleRecords();
             if (toSave.Count == 0)
             {
-                MessageBox.Show(this, "Kaydedilecek kayıt yok. Önce \"Başlat\" ile kayıt alın.", "Bilgi",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string msg = recorder.Count == 0
+                    ? "Kaydedilecek kayıt yok. Önce \"Başlat\" ile kayıt alın."
+                    : "Seçilen zaman aralığında kayıt yok. Filtreyi değiştirin veya kaldırın.";
+                MessageBox.Show(this, msg, "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return false;
             }
 
@@ -162,7 +179,8 @@ namespace KeyEventLogger
                 try
                 {
                     logWriter.Write(dialog.FileName, toSave);
-                    recorder.MarkSaved();
+                    if (activeFilter == null)
+                        recorder.MarkSaved(); // Tüm kayıtlar yazıldı
                     tsslState.Text = toSave.Count + " kayıt kaydedildi: " + System.IO.Path.GetFileName(dialog.FileName);
                     MessageBox.Show(this, toSave.Count + " kayıt başarıyla kaydedildi.\n\n" + dialog.FileName,
                         "Kaydedildi", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -175,6 +193,33 @@ namespace KeyEventLogger
                     return false;
                 }
             }
+        }
+
+        private void BtnApplyFilter_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                activeFilter = new TimeRangeFilter(dtpFrom.Value, dtpTo.Value);
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(this, ex.Message, "Geçersiz aralık",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            RefreshList();
+            lblFilterInfo.Text = "Filtre açık:\n" + activeFilter + "\n" +
+                                 lstLog.Items.Count + " / " + recorder.Count + " kayıt gösteriliyor.";
+            captureBox.Focus();
+        }
+
+        private void BtnClearFilter_Click(object sender, EventArgs e)
+        {
+            activeFilter = null;
+            RefreshList();
+            lblFilterInfo.Text = "Filtre yok: tüm kayıtlar gösteriliyor.";
+            captureBox.Focus();
         }
 
         private void EventTypeCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -227,7 +272,57 @@ namespace KeyEventLogger
 
         private void UpdateCount()
         {
-            tsslCount.Text = "Kayıt sayısı: " + recorder.Count;
+            tsslCount.Text = activeFilter == null
+                ? "Kayıt sayısı: " + recorder.Count
+                : "Kayıt sayısı: " + recorder.Count + " (gösterilen " + lstLog.Items.Count + ")";
+        }
+
+        /// <summary>Ekranda gösterilen kayıtlar: filtre varsa süzülmüş liste, yoksa tümü.</summary>
+        private IReadOnlyCollection<KeyEventRecord> GetVisibleRecords()
+        {
+            if (activeFilter == null)
+                return recorder.Records;
+            return activeFilter.Apply(recorder.Records);
+        }
+
+        /// <summary>Listeyi aktif filtreye göre baştan doldurur.</summary>
+        private void RefreshList()
+        {
+            lstLog.BeginUpdate();
+            try
+            {
+                lstLog.Items.Clear();
+                foreach (KeyEventRecord record in GetVisibleRecords())
+                    lstLog.Items.Add(record);
+                if (lstLog.Items.Count > 0)
+                    lstLog.TopIndex = lstLog.Items.Count - 1;
+            }
+            finally
+            {
+                lstLog.EndUpdate();
+            }
+            UpdateCount();
+        }
+
+        /// <summary>İstatistik panelini tüm kayıtlara göre yeniler.</summary>
+        private void UpdateStatistics()
+        {
+            var stats = new KeyStatistics(recorder.Records);
+            lblTotalEvents.Text = "Toplam olay: " + stats.TotalEvents;
+            lblKeyPressCount.Text = "Toplam tuş basımı (KeyDown): " + stats.KeyPressCount;
+            lblUniqueKeys.Text = "Farklı tuş sayısı: " + stats.UniqueKeyCount;
+
+            lstTopKeys.BeginUpdate();
+            lstTopKeys.Items.Clear();
+            int rank = 1;
+            foreach (KeyValuePair<string, int> pair in stats.GetTopKeys(5))
+            {
+                lstTopKeys.Items.Add(string.Format("{0}. {1,-14} {2,4} kez", rank, pair.Key, pair.Value));
+                rank++;
+            }
+            if (lstTopKeys.Items.Count == 0)
+                lstTopKeys.Items.Add("Henüz tuş basılmadı.");
+            lstTopKeys.EndUpdate();
         }
 
         /// <summary>Kayıt durum göstergesini, düğmeleri ve başlığı günceller.</summary>

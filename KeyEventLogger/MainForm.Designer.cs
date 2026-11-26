@@ -37,11 +37,27 @@ namespace KeyEventLogger
             chkKeyPress = new System.Windows.Forms.CheckBox();
             captureBox = new KeyEventLogger.Controls.KeyCaptureBox();
             lstLog = new System.Windows.Forms.ListBox();
+            grpStats = new System.Windows.Forms.GroupBox();
+            lblTotalEvents = new System.Windows.Forms.Label();
+            lblKeyPressCount = new System.Windows.Forms.Label();
+            lblUniqueKeys = new System.Windows.Forms.Label();
+            lblTopKeysTitle = new System.Windows.Forms.Label();
+            lstTopKeys = new System.Windows.Forms.ListBox();
+            grpFilter = new System.Windows.Forms.GroupBox();
+            lblFrom = new System.Windows.Forms.Label();
+            dtpFrom = new System.Windows.Forms.DateTimePicker();
+            lblTo = new System.Windows.Forms.Label();
+            dtpTo = new System.Windows.Forms.DateTimePicker();
+            btnApplyFilter = new System.Windows.Forms.Button();
+            btnClearFilter = new System.Windows.Forms.Button();
+            lblFilterInfo = new System.Windows.Forms.Label();
             statusStrip = new System.Windows.Forms.StatusStrip();
             tsslState = new System.Windows.Forms.ToolStripStatusLabel();
             tsslCount = new System.Windows.Forms.ToolStripStatusLabel();
             tsslFocus = new System.Windows.Forms.ToolStripStatusLabel();
             pnlHeader.SuspendLayout();
+            grpStats.SuspendLayout();
+            grpFilter.SuspendLayout();
             statusStrip.SuspendLayout();
             SuspendLayout();
             //
@@ -213,10 +229,158 @@ namespace KeyEventLogger
             lstLog.Location = new System.Drawing.Point(12, 198);
             lstLog.Name = "lstLog";
             lstLog.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            lstLog.Size = new System.Drawing.Size(976, 420);
+            lstLog.Size = new System.Drawing.Size(690, 420);
             lstLog.TabIndex = 9;
             lstLog.TabStop = false;
             lstLog.DrawItem += LstLog_DrawItem;
+            //
+            // grpStats
+            //
+            grpStats.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            grpStats.Controls.Add(lstTopKeys);
+            grpStats.Controls.Add(lblTopKeysTitle);
+            grpStats.Controls.Add(lblUniqueKeys);
+            grpStats.Controls.Add(lblKeyPressCount);
+            grpStats.Controls.Add(lblTotalEvents);
+            grpStats.Location = new System.Drawing.Point(712, 194);
+            grpStats.Name = "grpStats";
+            grpStats.Size = new System.Drawing.Size(276, 214);
+            grpStats.TabIndex = 11;
+            grpStats.TabStop = false;
+            grpStats.Text = "İstatistikler";
+            //
+            // lblTotalEvents
+            //
+            lblTotalEvents.AutoSize = true;
+            lblTotalEvents.Location = new System.Drawing.Point(12, 24);
+            lblTotalEvents.Name = "lblTotalEvents";
+            lblTotalEvents.Size = new System.Drawing.Size(110, 15);
+            lblTotalEvents.TabIndex = 0;
+            lblTotalEvents.Text = "Toplam olay: 0";
+            //
+            // lblKeyPressCount
+            //
+            lblKeyPressCount.AutoSize = true;
+            lblKeyPressCount.Location = new System.Drawing.Point(12, 45);
+            lblKeyPressCount.Name = "lblKeyPressCount";
+            lblKeyPressCount.Size = new System.Drawing.Size(150, 15);
+            lblKeyPressCount.TabIndex = 1;
+            lblKeyPressCount.Text = "Toplam tuş basımı: 0";
+            //
+            // lblUniqueKeys
+            //
+            lblUniqueKeys.AutoSize = true;
+            lblUniqueKeys.Location = new System.Drawing.Point(12, 66);
+            lblUniqueKeys.Name = "lblUniqueKeys";
+            lblUniqueKeys.Size = new System.Drawing.Size(120, 15);
+            lblUniqueKeys.TabIndex = 2;
+            lblUniqueKeys.Text = "Farklı tuş sayısı: 0";
+            //
+            // lblTopKeysTitle
+            //
+            lblTopKeysTitle.AutoSize = true;
+            lblTopKeysTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblTopKeysTitle.Location = new System.Drawing.Point(12, 92);
+            lblTopKeysTitle.Name = "lblTopKeysTitle";
+            lblTopKeysTitle.Size = new System.Drawing.Size(150, 15);
+            lblTopKeysTitle.TabIndex = 3;
+            lblTopKeysTitle.Text = "En sık kullanılan 5 tuş:";
+            //
+            // lstTopKeys
+            //
+            lstTopKeys.Font = new System.Drawing.Font("Consolas", 9.75F);
+            lstTopKeys.IntegralHeight = false;
+            lstTopKeys.ItemHeight = 15;
+            lstTopKeys.Location = new System.Drawing.Point(12, 112);
+            lstTopKeys.Name = "lstTopKeys";
+            lstTopKeys.SelectionMode = System.Windows.Forms.SelectionMode.None;
+            lstTopKeys.Size = new System.Drawing.Size(252, 90);
+            lstTopKeys.TabIndex = 4;
+            lstTopKeys.TabStop = false;
+            //
+            // grpFilter
+            //
+            grpFilter.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            grpFilter.Controls.Add(lblFilterInfo);
+            grpFilter.Controls.Add(btnClearFilter);
+            grpFilter.Controls.Add(btnApplyFilter);
+            grpFilter.Controls.Add(dtpTo);
+            grpFilter.Controls.Add(lblTo);
+            grpFilter.Controls.Add(dtpFrom);
+            grpFilter.Controls.Add(lblFrom);
+            grpFilter.Location = new System.Drawing.Point(712, 414);
+            grpFilter.Name = "grpFilter";
+            grpFilter.Size = new System.Drawing.Size(276, 204);
+            grpFilter.TabIndex = 12;
+            grpFilter.TabStop = false;
+            grpFilter.Text = "Tarih / Saat Aralığına Göre Filtrele";
+            //
+            // lblFrom
+            //
+            lblFrom.AutoSize = true;
+            lblFrom.Location = new System.Drawing.Point(12, 28);
+            lblFrom.Name = "lblFrom";
+            lblFrom.Size = new System.Drawing.Size(62, 15);
+            lblFrom.TabIndex = 0;
+            lblFrom.Text = "Başlangıç:";
+            //
+            // dtpFrom
+            //
+            dtpFrom.CustomFormat = "dd.MM.yyyy HH:mm:ss";
+            dtpFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            dtpFrom.Location = new System.Drawing.Point(84, 24);
+            dtpFrom.Name = "dtpFrom";
+            dtpFrom.ShowUpDown = true;
+            dtpFrom.Size = new System.Drawing.Size(180, 23);
+            dtpFrom.TabIndex = 1;
+            //
+            // lblTo
+            //
+            lblTo.AutoSize = true;
+            lblTo.Location = new System.Drawing.Point(12, 62);
+            lblTo.Name = "lblTo";
+            lblTo.Size = new System.Drawing.Size(34, 15);
+            lblTo.TabIndex = 2;
+            lblTo.Text = "Bitiş:";
+            //
+            // dtpTo
+            //
+            dtpTo.CustomFormat = "dd.MM.yyyy HH:mm:ss";
+            dtpTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            dtpTo.Location = new System.Drawing.Point(84, 58);
+            dtpTo.Name = "dtpTo";
+            dtpTo.ShowUpDown = true;
+            dtpTo.Size = new System.Drawing.Size(180, 23);
+            dtpTo.TabIndex = 3;
+            //
+            // btnApplyFilter
+            //
+            btnApplyFilter.Location = new System.Drawing.Point(12, 94);
+            btnApplyFilter.Name = "btnApplyFilter";
+            btnApplyFilter.Size = new System.Drawing.Size(120, 30);
+            btnApplyFilter.TabIndex = 4;
+            btnApplyFilter.Text = "Filtrele";
+            btnApplyFilter.UseVisualStyleBackColor = true;
+            btnApplyFilter.Click += BtnApplyFilter_Click;
+            //
+            // btnClearFilter
+            //
+            btnClearFilter.Location = new System.Drawing.Point(144, 94);
+            btnClearFilter.Name = "btnClearFilter";
+            btnClearFilter.Size = new System.Drawing.Size(120, 30);
+            btnClearFilter.TabIndex = 5;
+            btnClearFilter.Text = "Filtreyi Kaldır";
+            btnClearFilter.UseVisualStyleBackColor = true;
+            btnClearFilter.Click += BtnClearFilter_Click;
+            //
+            // lblFilterInfo
+            //
+            lblFilterInfo.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
+            lblFilterInfo.Location = new System.Drawing.Point(12, 132);
+            lblFilterInfo.Name = "lblFilterInfo";
+            lblFilterInfo.Size = new System.Drawing.Size(252, 62);
+            lblFilterInfo.TabIndex = 6;
+            lblFilterInfo.Text = "Filtre yok: tüm kayıtlar gösteriliyor.";
             //
             // statusStrip
             //
@@ -254,6 +418,8 @@ namespace KeyEventLogger
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
             ClientSize = new System.Drawing.Size(1000, 650);
+            Controls.Add(grpFilter);
+            Controls.Add(grpStats);
             Controls.Add(lstLog);
             Controls.Add(captureBox);
             Controls.Add(chkKeyPress);
@@ -280,6 +446,10 @@ namespace KeyEventLogger
             KeyPress += MainForm_KeyPress;
             pnlHeader.ResumeLayout(false);
             pnlHeader.PerformLayout();
+            grpStats.ResumeLayout(false);
+            grpStats.PerformLayout();
+            grpFilter.ResumeLayout(false);
+            grpFilter.PerformLayout();
             statusStrip.ResumeLayout(false);
             statusStrip.PerformLayout();
             ResumeLayout(false);
@@ -302,6 +472,20 @@ namespace KeyEventLogger
         private System.Windows.Forms.CheckBox chkKeyPress;
         private KeyEventLogger.Controls.KeyCaptureBox captureBox;
         private System.Windows.Forms.ListBox lstLog;
+        private System.Windows.Forms.GroupBox grpStats;
+        private System.Windows.Forms.Label lblTotalEvents;
+        private System.Windows.Forms.Label lblKeyPressCount;
+        private System.Windows.Forms.Label lblUniqueKeys;
+        private System.Windows.Forms.Label lblTopKeysTitle;
+        private System.Windows.Forms.ListBox lstTopKeys;
+        private System.Windows.Forms.GroupBox grpFilter;
+        private System.Windows.Forms.Label lblFrom;
+        private System.Windows.Forms.DateTimePicker dtpFrom;
+        private System.Windows.Forms.Label lblTo;
+        private System.Windows.Forms.DateTimePicker dtpTo;
+        private System.Windows.Forms.Button btnApplyFilter;
+        private System.Windows.Forms.Button btnClearFilter;
+        private System.Windows.Forms.Label lblFilterInfo;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel tsslState;
         private System.Windows.Forms.ToolStripStatusLabel tsslCount;
