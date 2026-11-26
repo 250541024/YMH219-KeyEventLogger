@@ -43,7 +43,7 @@ Gereken: Visual Studio 2026 ve ".NET masaüstü geliştirme" iş yükü (.NET 10
 
 **Visual Studio ile:**
 
-1. Depoyu klonlayın: `git clone https://github.com/<kullanici-adi>/YMH219-KeyEventLogger.git`
+1. Depoyu klonlayın: `git clone https://github.com/250541024/YMH219-KeyEventLogger.git`
 2. `KeyEventLogger.sln` dosyasını Visual Studio ile açın.
 3. **F5** tuşuna basın ya da üstteki yeşil ▶ **KeyEventLogger** düğmesine tıklayın.
 
