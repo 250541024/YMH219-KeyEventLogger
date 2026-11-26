@@ -1,0 +1,40 @@
+﻿# Key Event Logger - Klavye Olay Kayıtları
+# Oluşturulma : 26.11.2026 15:59:07
+# Kayıt sayısı: 107 (ilk 35 satır gösteriliyor)
+# Not: Kayıtlar yalnızca uygulama penceresi odaktayken alınmıştır.
+------------------------------------------------------------------------------------------
+[26.11.2026 15:58:30.504] KeyDown  | Tuş: Shift            | Kod: 16     | Değiştirici: Shift
+[26.11.2026 15:58:30.516] KeyDown  | Tuş: N                | Kod: 78     | Değiştirici: Shift
+[26.11.2026 15:58:30.529] KeyPress | Tuş: 'N'              | Kod: U+004E | Değiştirici: Shift
+[26.11.2026 15:58:30.531] KeyUp    | Tuş: N                | Kod: 78     | Değiştirici: Shift
+[26.11.2026 15:58:30.532] KeyUp    | Tuş: Shift            | Kod: 16     | Değiştirici: -
+[26.11.2026 15:58:30.543] KeyDown  | Tuş: E                | Kod: 69     | Değiştirici: -
+[26.11.2026 15:58:30.545] KeyPress | Tuş: 'e'              | Kod: U+0065 | Değiştirici: -
+[26.11.2026 15:58:30.553] KeyUp    | Tuş: E                | Kod: 69     | Değiştirici: -
+[26.11.2026 15:58:30.578] KeyDown  | Tuş: S                | Kod: 83     | Değiştirici: -
+[26.11.2026 15:58:30.580] KeyPress | Tuş: 's'              | Kod: U+0073 | Değiştirici: -
+[26.11.2026 15:58:30.589] KeyUp    | Tuş: S                | Kod: 83     | Değiştirici: -
+[26.11.2026 15:58:30.612] KeyDown  | Tuş: N                | Kod: 78     | Değiştirici: -
+[26.11.2026 15:58:30.614] KeyPress | Tuş: 'n'              | Kod: U+006E | Değiştirici: -
+[26.11.2026 15:58:30.623] KeyUp    | Tuş: N                | Kod: 78     | Değiştirici: -
+[26.11.2026 15:58:30.648] KeyDown  | Tuş: E                | Kod: 69     | Değiştirici: -
+[26.11.2026 15:58:30.650] KeyPress | Tuş: 'e'              | Kod: U+0065 | Değiştirici: -
+[26.11.2026 15:58:30.658] KeyUp    | Tuş: E                | Kod: 69     | Değiştirici: -
+[26.11.2026 15:58:31.435] KeyDown  | Tuş: Boşluk           | Kod: 32     | Değiştirici: -
+[26.11.2026 15:58:31.436] KeyPress | Tuş: ' ' (Boşluk)     | Kod: U+0020 | Değiştirici: -
+[26.11.2026 15:58:31.445] KeyUp    | Tuş: Boşluk           | Kod: 32     | Değiştirici: -
+[26.11.2026 15:58:31.475] KeyDown  | Tuş: Shift            | Kod: 16     | Değiştirici: Shift
+[26.11.2026 15:58:31.489] KeyDown  | Tuş: T                | Kod: 84     | Değiştirici: Shift
+[26.11.2026 15:58:31.490] KeyPress | Tuş: 'T'              | Kod: U+0054 | Değiştirici: Shift
+[26.11.2026 15:58:31.500] KeyUp    | Tuş: T                | Kod: 84     | Değiştirici: Shift
+[26.11.2026 15:58:31.511] KeyUp    | Tuş: Shift            | Kod: 16     | Değiştirici: -
+[26.11.2026 15:58:31.524] KeyDown  | Tuş: A                | Kod: 65     | Değiştirici: -
+[26.11.2026 15:58:31.525] KeyPress | Tuş: 'a'              | Kod: U+0061 | Değiştirici: -
+[26.11.2026 15:58:31.534] KeyUp    | Tuş: A                | Kod: 65     | Değiştirici: -
+[26.11.2026 15:58:31.558] KeyDown  | Tuş: B                | Kod: 66     | Değiştirici: -
+[26.11.2026 15:58:31.560] KeyPress | Tuş: 'b'              | Kod: U+0062 | Değiştirici: -
+[26.11.2026 15:58:31.569] KeyUp    | Tuş: B                | Kod: 66     | Değiştirici: -
+[26.11.2026 15:58:31.593] KeyDown  | Tuş: A                | Kod: 65     | Değiştirici: -
+[26.11.2026 15:58:31.599] KeyPress | Tuş: 'a'              | Kod: U+0061 | Değiştirici: -
+[26.11.2026 15:58:31.606] KeyUp    | Tuş: A                | Kod: 65     | Değiştirici: -
+[26.11.2026 15:58:31.628] KeyDown  | Tuş: N                | Kod: 78     | Değiştirici: -
