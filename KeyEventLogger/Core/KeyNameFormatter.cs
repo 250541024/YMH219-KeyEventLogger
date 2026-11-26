@@ -45,6 +45,9 @@ namespace KeyEventLogger.Core
             { Keys.Subtract, "Num -" },
             { Keys.Multiply, "Num *" },
             { Keys.Divide, "Num /" },
+            // Ekran klavyesi / yazılımla gönderilen Unicode karakterler bu kodla gelir
+            { Keys.Packet, "Unicode (Packet)" },
+            { Keys.ProcessKey, "IME" },
         };
 
         /// <summary>KeyDown/KeyUp olayındaki tuş kodunun adını döndürür.</summary>
@@ -77,6 +80,10 @@ namespace KeyEventLogger.Core
             }
 
             // Ctrl+harf gibi kombinasyonlar görünmeyen kontrol karakterleri üretir
+            // (Ctrl+A = 1, Ctrl+B = 2, ... Ctrl+Z = 26)
+            if (c >= (char)1 && c <= (char)26)
+                return "(Ctrl+" + (char)('A' + c - 1) + ")";
+
             if (char.IsControl(c))
                 return "(Kontrol " + (int)c + ")";
 
