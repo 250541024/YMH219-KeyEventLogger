@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using KeyEventLogger.Core;
 using KeyEventLogger.Models;
+using KeyEventLogger.Services;
 
 namespace KeyEventLogger
 {
@@ -22,6 +23,7 @@ namespace KeyEventLogger
         private static readonly Color StoppedColor = Color.FromArgb(100, 116, 139);
 
         private readonly KeyEventRecorder recorder = new KeyEventRecorder();
+        private readonly ILogWriter logWriter = new TextFileLogWriter();
 
         public MainForm()
         {
@@ -126,6 +128,55 @@ namespace KeyEventLogger
             captureBox.Focus();
         }
 
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            SaveRecords();
+            captureBox.Focus();
+        }
+
+        /// <summary>
+        /// Kayıtları kullanıcının seçtiği .txt dosyasına yazar.
+        /// Başarılıysa true, iptal edildiyse veya hata oluştuysa false döner.
+        /// </summary>
+        private bool SaveRecords()
+        {
+            var toSave = recorder.Records;
+            if (toSave.Count == 0)
+            {
+                MessageBox.Show(this, "Kaydedilecek kayıt yok. Önce \"Başlat\" ile kayıt alın.", "Bilgi",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return false;
+            }
+
+            using (var dialog = new SaveFileDialog())
+            {
+                dialog.Title = "Kayıtları dosyaya kaydet";
+                dialog.Filter = logWriter.FileFilter;
+                dialog.FileName = "KeyEventLog_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".txt";
+                dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                dialog.OverwritePrompt = true;
+
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return false;
+
+                try
+                {
+                    logWriter.Write(dialog.FileName, toSave);
+                    recorder.MarkSaved();
+                    tsslState.Text = toSave.Count + " kayıt kaydedildi: " + System.IO.Path.GetFileName(dialog.FileName);
+                    MessageBox.Show(this, toSave.Count + " kayıt başarıyla kaydedildi.\n\n" + dialog.FileName,
+                        "Kaydedildi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return true;
+                }
+                catch (LogFileException ex)
+                {
+                    MessageBox.Show(this, ex.Message + "\n\nAyrıntı: " + ex.InnerException?.Message,
+                        "Kaydetme hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+        }
+
         private void EventTypeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             recorder.SetEnabled(KeyEventType.KeyDown, chkKeyDown.Checked);
@@ -147,6 +198,21 @@ namespace KeyEventLogger
         {
             captureBox.WindowActive = false;
             tsslFocus.Text = "Pencere arka planda: olay yakalanmıyor";
+        }
+
+        /// <summary>Kaydedilmemiş kayıt varsa kapatmadan önce kullanıcıya sorar.</summary>
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!recorder.HasUnsavedRecords || recorder.Count == 0) return;
+
+            DialogResult answer = MessageBox.Show(this,
+                recorder.Count + " kayıt henüz dosyaya kaydedilmedi. Çıkmadan önce kaydetmek ister misiniz?",
+                "Kaydedilmemiş kayıtlar", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+            if (answer == DialogResult.Cancel)
+                e.Cancel = true;
+            else if (answer == DialogResult.Yes && !SaveRecords())
+                e.Cancel = true;
         }
 
         // ---------------------------------------------------------------

@@ -30,6 +30,7 @@ namespace KeyEventLogger
             btnStart = new System.Windows.Forms.Button();
             btnStop = new System.Windows.Forms.Button();
             btnClear = new System.Windows.Forms.Button();
+            btnSave = new System.Windows.Forms.Button();
             lblEventTypes = new System.Windows.Forms.Label();
             chkKeyDown = new System.Windows.Forms.CheckBox();
             chkKeyUp = new System.Windows.Forms.CheckBox();
@@ -132,6 +133,17 @@ namespace KeyEventLogger
             btnClear.Text = "Temizle";
             btnClear.UseVisualStyleBackColor = true;
             btnClear.Click += BtnClear_Click;
+            //
+            // btnSave
+            //
+            btnSave.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            btnSave.Location = new System.Drawing.Point(360, 78);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new System.Drawing.Size(140, 34);
+            btnSave.TabIndex = 4;
+            btnSave.Text = "Dosyaya Kaydet…";
+            btnSave.UseVisualStyleBackColor = true;
+            btnSave.Click += BtnSave_Click;
             //
             // lblEventTypes
             //
@@ -248,6 +260,7 @@ namespace KeyEventLogger
             Controls.Add(chkKeyUp);
             Controls.Add(chkKeyDown);
             Controls.Add(lblEventTypes);
+            Controls.Add(btnSave);
             Controls.Add(btnClear);
             Controls.Add(btnStop);
             Controls.Add(btnStart);
@@ -261,6 +274,7 @@ namespace KeyEventLogger
             Text = "Key Event Logger";
             Activated += MainForm_Activated;
             Deactivate += MainForm_Deactivate;
+            FormClosing += MainForm_FormClosing;
             KeyDown += MainForm_KeyDown;
             KeyUp += MainForm_KeyUp;
             KeyPress += MainForm_KeyPress;
@@ -281,6 +295,7 @@ namespace KeyEventLogger
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label lblEventTypes;
         private System.Windows.Forms.CheckBox chkKeyDown;
         private System.Windows.Forms.CheckBox chkKeyUp;
