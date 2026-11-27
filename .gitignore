@@ -25,6 +25,7 @@ packages/
 *.log
 logs/
 KeyEventLog_*.txt
+KeyEventLog_*.csv
 
 # İşletim sistemi dosyaları
 Thumbs.db

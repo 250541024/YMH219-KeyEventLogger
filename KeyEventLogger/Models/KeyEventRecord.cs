@@ -73,6 +73,7 @@ namespace KeyEventLogger.Models
                 Timestamp, EventType, KeyName, CodeText, mods);
         }
 
-        private string CodeText => EventType == KeyEventType.KeyPress ? "U+" + Code.ToString("X4") : Code.ToString();
+        /// <summary>Kodun gösterim biçimi: KeyDown/KeyUp için sayı, KeyPress için Unicode (ör. U+0061).</summary>
+        public string CodeText => EventType == KeyEventType.KeyPress ? "U+" + Code.ToString("X4") : Code.ToString();
     }
 }

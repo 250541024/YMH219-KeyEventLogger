@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using KeyEventLogger.Core;
 using KeyEventLogger.Models;
@@ -24,7 +25,9 @@ namespace KeyEventLogger
         private static readonly Color StoppedColor = Color.FromArgb(100, 116, 139);
 
         private readonly KeyEventRecorder recorder = new KeyEventRecorder();
-        private readonly ILogWriter logWriter = new TextFileLogWriter();
+        // Desteklenen kayıt biçimleri. Yeni bir biçim için yalnızca FileLogWriterBase'den
+        // türeyen bir sınıf yazıp bu listeye eklemek yeterlidir (form kodu değişmez).
+        private readonly FileLogWriterBase[] logWriters = { new TextFileLogWriter(), new CsvLogWriter() };
 
         /// <summary>Uygulanan zaman filtresi; null ise tüm kayıtlar gösterilir.</summary>
         private TimeRangeFilter activeFilter;
@@ -168,8 +171,9 @@ namespace KeyEventLogger
             using (var dialog = new SaveFileDialog())
             {
                 dialog.Title = "Kayıtları dosyaya kaydet";
-                dialog.Filter = logWriter.FileFilter;
-                dialog.FileName = "KeyEventLog_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".txt";
+                dialog.Filter = string.Join("|", logWriters.Select(w => w.FileFilter));
+                dialog.FileName = "KeyEventLog_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                dialog.AddExtension = true;
                 dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 dialog.OverwritePrompt = true;
 
@@ -178,7 +182,12 @@ namespace KeyEventLogger
 
                 try
                 {
-                    logWriter.Write(dialog.FileName, toSave);
+                    // Biçim, dosya uzantısına göre seçilir (uzantı yazılmadıysa seçilen dosya türü)
+                    string extension = System.IO.Path.GetExtension(dialog.FileName);
+                    FileLogWriterBase writer = logWriters.FirstOrDefault(w =>
+                        string.Equals(w.Extension, extension, StringComparison.OrdinalIgnoreCase))
+                        ?? logWriters[Math.Clamp(dialog.FilterIndex - 1, 0, logWriters.Length - 1)];
+                    writer.Write(dialog.FileName, toSave);
                     if (activeFilter == null)
                         recorder.MarkSaved(); // Tüm kayıtlar yazıldı
                     tsslState.Text = toSave.Count + " kayıt kaydedildi: " + System.IO.Path.GetFileName(dialog.FileName);
