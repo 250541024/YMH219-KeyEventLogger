@@ -2,7 +2,7 @@
 
 **Nesne Tabanlı Programlama (YMH 219): Ek Uygulama Ödevi 2**
 
-C# ve Windows Forms ile yazılmış, klavye olaylarının (`KeyDown`, `KeyUp`, `KeyPress`) nasıl yakalandığını ve işlendiğini gösteren eğitsel bir masaüstü uygulaması. Uygulama **yalnızca kendi penceresi odaktayken** basılan tuşları, tuş adı ve zaman bilgisiyle listeler. İstenirse kayıtlar yerel bir `.txt` dosyasına kaydedilir.
+C# ve Windows Forms ile yazılmış, klavye olaylarının (`KeyDown`, `KeyUp`, `KeyPress`) nasıl yakalandığını ve işlendiğini gösteren eğitsel bir masaüstü uygulaması. Uygulama **yalnızca kendi penceresi odaktayken** basılan tuşları, tuş adı ve zaman bilgisiyle listeler. İstenirse kayıtlar yerel bir `.txt` veya Excel'de açılabilen `.csv` dosyasına kaydedilir.
 
 | Öğrenci | Bilgi |
 |---|---|
@@ -59,7 +59,7 @@ dotnet run --project KeyEventLogger
 2. Uygulama penceresi aktifken tuşlara basın. Her olay zaman, olay türü, tuş adı, tuş kodu ve değiştirici tuşlarla (Ctrl/Shift/Alt) listelenir.
 3. **■ Durdur** düğmesi kaydı durdurur. Gösterge gri **■ KAYIT DURDU** olur.
 4. **Temizle** düğmesi, onay aldıktan sonra ekrandaki kayıtları siler.
-5. **Dosyaya Kaydet…** düğmesi kayıtları seçtiğiniz `.txt` dosyasına yazar.
+5. **Dosyaya Kaydet…** düğmesi kayıtları seçtiğiniz dosyaya yazar. Kayıt türü olarak **Metin (.txt)** veya **CSV - Excel (.csv)** seçilebilir.
 6. "Yakalanacak olaylar" kutucuklarıyla `KeyDown` / `KeyUp` / `KeyPress` olaylarını ayrı ayrı açıp kapatabilirsiniz.
 
 ## Temel Özellikler
@@ -71,7 +71,7 @@ dotnet run --project KeyEventLogger
 | Pencere aktifken basılan tuş adı ve zaman bilgisi ListBox üzerinde gösterilmeli | `lstLog` (ListBox): `HH:mm:ss.fff` zaman, olay türü, tuş adı, kod, değiştiriciler |
 | Başlat ve Durdur butonları ile kayıt durumu kontrol edilmeli | `btnStart`, `btnStop` → `KeyEventRecorder.Start()` / `Stop()` |
 | Temizle butonu ile ekrandaki kayıtlar silinebilmeli | `btnClear` (onay sorar) → `KeyEventRecorder.Clear()` |
-| Kayıtlar istenirse .txt dosyasına kaydedilebilmeli | `btnSave` + `SaveFileDialog` → `TextFileLogWriter` (`StreamWriter`, UTF-8) |
+| Kayıtlar istenirse .txt dosyasına kaydedilebilmeli | `btnSave` + `SaveFileDialog` → `TextFileLogWriter` (`StreamWriter`, UTF-8). Ek olarak `CsvLogWriter` ile .csv |
 | Kayıt durumunu belirten açık bir gösterge | Kırmızı/gri durum etiketi, pencere başlığı, yakalama alanının kenar rengi, durum çubuğu |
 
 ### İsteğe bağlı geliştirmeler (föyde önerilen)
@@ -118,7 +118,9 @@ YMH219-KeyEventLogger/
 │   │   └── KeyNameFormatter.cs        Tuş/karakter adlarını okunur hale getirir
 │   ├── Services/
 │   │   ├── ILogWriter.cs              Dosyaya yazma arayüzü
-│   │   ├── TextFileLogWriter.cs       StreamWriter ile .txt yazımı
+│   │   ├── FileLogWriterBase.cs       Soyut temel sınıf: dosya açma + hata yönetimi
+│   │   ├── TextFileLogWriter.cs       Okunabilir .txt biçimi
+│   │   ├── CsvLogWriter.cs            Excel için .csv biçimi
 │   │   ├── LogFileException.cs        Özel istisna sınıfı
 │   │   ├── KeyStatistics.cs           İstatistik hesaplama
 │   │   └── TimeRangeFilter.cs         Tarih/saat aralığı filtresi
@@ -137,7 +139,8 @@ YMH219-KeyEventLogger/
 | **Değiştirilemez nesne** | `KeyEventRecord` sınıfının tüm özellikleri salt okunurdur, değerler yapıcıda atanır. |
 | **Factory method** | `KeyEventRecord.FromKeyEvent(...)` ve `KeyEventRecord.FromKeyPress(...)`. Yapıcı `private`. |
 | **Kalıtım ve override** | `KeyCaptureBox : Control`. `IsInputKey`, `OnPaint`, `OnKeyPress`, `OnGotFocus` metotları ezilir. `KeyEventRecord.ToString()` override edilir. |
-| **Arayüz (interface)** | `ILogWriter`: form somut sınıfa değil arayüze bağımlıdır. CSV gibi yeni bir biçim için yalnızca yeni bir sınıf yazmak yeterlidir. |
+| **Arayüz (interface)** | `ILogWriter`: kayıt yazıcılarının ortak sözleşmesi. |
+| **Soyut sınıf + Template Method** | `FileLogWriterBase.Write` dosyayı açar, hataları `LogFileException`'a çevirir ve içeriği soyut `WriteContent` metoduna bırakır. `TextFileLogWriter` ve `CsvLogWriter` yalnızca biçimi yazar (**çok biçimlilik**). Yeni bir biçim için tek bir alt sınıf yeterlidir. |
 | **Olay (event)** | `KeyEventRecorder.RecordAdded`, `RecordingStateChanged`, `RecordsCleared` olaylarına form abone olur. Özel `KeyEventRecordedEventArgs` sınıfı kullanılır. |
 | **Özel istisna** | `LogFileException : Exception`. Asıl hata `InnerException` içinde taşınır. |
 | **Hata yönetimi** | `try/catch` ile `UnauthorizedAccessException`, `DirectoryNotFoundException`, `IOException` vb. yakalanır. `using` ile dosya her durumda kapatılır. Geçersiz filtre aralığı `ArgumentException` ile reddedilir. |
@@ -167,4 +170,4 @@ YMH219-KeyEventLogger/
 - Ekran klavyesi veya yazılımla gönderilen Unicode karakterler `KeyDown` olayında `Unicode (Packet)` olarak görünür. Karakterin kendisi `KeyPress` satırında yer alır.
 - Filtre tarih/saat aralığına göre çalışır. Kayıt açıkken gelen yeni olaylar da filtreye uyuyorsa listeye eklenir.
 - İstatistikler, filtreden bağımsız olarak tüm kayıtlar üzerinden hesaplanır.
-- Olası geliştirmeler: CSV biçiminde dışa aktarma (yeni bir `ILogWriter` sınıfıyla), olay türüne göre filtreleme, birim testleri.
+- Olası geliştirmeler: olay türüne göre filtreleme, birim testleri.
