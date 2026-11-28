@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -29,8 +29,11 @@ namespace KeyEventLogger
         // türeyen bir sınıf yazıp bu listeye eklemek yeterlidir (form kodu değişmez).
         private readonly FileLogWriterBase[] logWriters = { new TextFileLogWriter(), new CsvLogWriter() };
 
-        /// <summary>Uygulanan zaman filtresi; null ise tüm kayıtlar gösterilir.</summary>
-        private TimeRangeFilter activeFilter;
+        /// <summary>Uygulanan filtre (zaman aralığı + olay türü); null ise tüm kayıtlar gösterilir.</summary>
+        private RecordFilter activeFilter;
+
+        /// <summary>Olay türü listesindeki "tüm türler" seçeneği.</summary>
+        private const string AllEventTypes = "Tümü";
 
         public MainForm()
         {
@@ -44,6 +47,11 @@ namespace KeyEventLogger
             // Filtre varsayılanı: bugünün tamamı
             dtpFrom.Value = DateTime.Today;
             dtpTo.Value = DateTime.Today.AddDays(1).AddSeconds(-1);
+
+            cmbEventType.Items.Add(AllEventTypes);
+            foreach (KeyEventType type in Enum.GetValues(typeof(KeyEventType)))
+                cmbEventType.Items.Add(type);
+            cmbEventType.SelectedIndex = 0;
 
             UpdateRecordingUi();
             UpdateStatistics();
@@ -163,7 +171,7 @@ namespace KeyEventLogger
             {
                 string msg = recorder.Count == 0
                     ? "Kaydedilecek kayıt yok. Önce \"Başlat\" ile kayıt alın."
-                    : "Seçilen zaman aralığında kayıt yok. Filtreyi değiştirin veya kaldırın.";
+                    : "Filtreye uyan kayıt yok. Filtreyi değiştirin veya kaldırın.";
                 MessageBox.Show(this, msg, "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return false;
             }
@@ -208,7 +216,9 @@ namespace KeyEventLogger
         {
             try
             {
-                activeFilter = new TimeRangeFilter(dtpFrom.Value, dtpTo.Value);
+                // "Tümü" seçiliyse olay türüne göre süzme yapılmaz
+                KeyEventType? type = cmbEventType.SelectedItem is KeyEventType selected ? selected : (KeyEventType?)null;
+                activeFilter = new RecordFilter(dtpFrom.Value, dtpTo.Value, type);
             }
             catch (ArgumentException ex)
             {
@@ -218,7 +228,8 @@ namespace KeyEventLogger
             }
 
             RefreshList();
-            lblFilterInfo.Text = "Filtre açık:\n" + activeFilter + "\n" +
+            string typeText = activeFilter.EventType == null ? "tüm olaylar" : "yalnızca " + activeFilter.EventType.Value;
+            lblFilterInfo.Text = "Filtre açık (" + typeText + "):\n" + activeFilter + "\n" +
                                  lstLog.Items.Count + " / " + recorder.Count + " kayıt gösteriliyor.";
             captureBox.Focus();
         }
@@ -226,6 +237,7 @@ namespace KeyEventLogger
         private void BtnClearFilter_Click(object sender, EventArgs e)
         {
             activeFilter = null;
+            cmbEventType.SelectedIndex = 0;
             RefreshList();
             lblFilterInfo.Text = "Filtre yok: tüm kayıtlar gösteriliyor.";
             captureBox.Focus();

@@ -77,7 +77,7 @@ dotnet run --project KeyEventLogger
 ### İsteğe bağlı geliştirmeler (föyde önerilen)
 
 - **İstatistik:** toplam olay sayısı, toplam tuş basımı, farklı tuş sayısı ve **en sık kullanılan 5 tuş**
-- **Tarih/saat aralığına göre filtreleme:** başlangıç ve bitiş zamanı seçilir, yalnızca aralıktaki kayıtlar gösterilir. Filtre açıkken "Dosyaya Kaydet" görünen kayıtları kaydeder.
+- **Tarih/saat aralığına ve olay türüne göre filtreleme:** başlangıç ve bitiş zamanı seçilir, istenirse yalnızca bir olay türü (KeyDown, KeyUp veya KeyPress) gösterilir. Filtre açıkken "Dosyaya Kaydet" görünen kayıtları kaydeder.
 
 ### Ek özellikler
 
@@ -123,7 +123,7 @@ YMH219-KeyEventLogger/
 │   │   ├── CsvLogWriter.cs            Excel için .csv biçimi
 │   │   ├── LogFileException.cs        Özel istisna sınıfı
 │   │   ├── KeyStatistics.cs           İstatistik hesaplama
-│   │   └── TimeRangeFilter.cs         Tarih/saat aralığı filtresi
+│   │   └── RecordFilter.cs            Tarih/saat aralığı ve olay türü filtresi
 │   └── Controls/
 │       └── KeyCaptureBox.cs           Control'den türetilmiş tuş yakalama alanı
 └── docs/
@@ -168,6 +168,6 @@ YMH219-KeyEventLogger/
 - **Print Screen** tuşu Windows tarafından işlendiği için yalnızca `KeyUp` olayı üretir.
 - **Alt+F4**, **Alt+Tab** ve **Windows tuşu** kombinasyonları işletim sistemi tarafından işlenir. Kayda düşebilirler ama pencereyi kapatma ya da odaktan çıkarma gibi etkileri de olur.
 - Ekran klavyesi veya yazılımla gönderilen Unicode karakterler `KeyDown` olayında `Unicode (Packet)` olarak görünür. Karakterin kendisi `KeyPress` satırında yer alır.
-- Filtre tarih/saat aralığına göre çalışır. Kayıt açıkken gelen yeni olaylar da filtreye uyuyorsa listeye eklenir.
+- Filtre tarih/saat aralığına ve isteğe bağlı olarak olay türüne göre çalışır. Kayıt açıkken gelen yeni olaylar da filtreye uyuyorsa listeye eklenir.
 - İstatistikler, filtreden bağımsız olarak tüm kayıtlar üzerinden hesaplanır.
-- Olası geliştirmeler: olay türüne göre filtreleme, birim testleri.
+- Olası geliştirmeler: birden fazla olay türünü aynı anda seçerek filtreleme, birim testleri.

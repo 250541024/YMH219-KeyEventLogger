@@ -51,6 +51,8 @@ namespace KeyEventLogger
             btnApplyFilter = new System.Windows.Forms.Button();
             btnClearFilter = new System.Windows.Forms.Button();
             lblFilterInfo = new System.Windows.Forms.Label();
+            lblEventType = new System.Windows.Forms.Label();
+            cmbEventType = new System.Windows.Forms.ComboBox();
             statusStrip = new System.Windows.Forms.StatusStrip();
             tsslState = new System.Windows.Forms.ToolStripStatusLabel();
             tsslCount = new System.Windows.Forms.ToolStripStatusLabel();
@@ -302,6 +304,8 @@ namespace KeyEventLogger
             //
             grpFilter.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             grpFilter.Controls.Add(lblFilterInfo);
+            grpFilter.Controls.Add(cmbEventType);
+            grpFilter.Controls.Add(lblEventType);
             grpFilter.Controls.Add(btnClearFilter);
             grpFilter.Controls.Add(btnApplyFilter);
             grpFilter.Controls.Add(dtpTo);
@@ -313,7 +317,7 @@ namespace KeyEventLogger
             grpFilter.Size = new System.Drawing.Size(276, 204);
             grpFilter.TabIndex = 12;
             grpFilter.TabStop = false;
-            grpFilter.Text = "Tarih / Saat Aralığına Göre Filtrele";
+            grpFilter.Text = "Zamana ve Olay Türüne Göre Filtrele";
             //
             // lblFrom
             //
@@ -355,17 +359,34 @@ namespace KeyEventLogger
             //
             // btnApplyFilter
             //
-            btnApplyFilter.Location = new System.Drawing.Point(12, 94);
+            btnApplyFilter.Location = new System.Drawing.Point(12, 122);
             btnApplyFilter.Name = "btnApplyFilter";
             btnApplyFilter.Size = new System.Drawing.Size(120, 30);
             btnApplyFilter.TabIndex = 4;
             btnApplyFilter.Text = "Filtrele";
             btnApplyFilter.UseVisualStyleBackColor = true;
             btnApplyFilter.Click += BtnApplyFilter_Click;
+            // 
+            // lblEventType
+            // 
+            lblEventType.AutoSize = true;
+            lblEventType.Location = new System.Drawing.Point(12, 94);
+            lblEventType.Name = "lblEventType";
+            lblEventType.Size = new System.Drawing.Size(60, 15);
+            lblEventType.TabIndex = 7;
+            lblEventType.Text = "Olay türü:";
+            // 
+            // cmbEventType
+            // 
+            cmbEventType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cmbEventType.Location = new System.Drawing.Point(84, 90);
+            cmbEventType.Name = "cmbEventType";
+            cmbEventType.Size = new System.Drawing.Size(180, 23);
+            cmbEventType.TabIndex = 8;
             //
             // btnClearFilter
             //
-            btnClearFilter.Location = new System.Drawing.Point(144, 94);
+            btnClearFilter.Location = new System.Drawing.Point(144, 122);
             btnClearFilter.Name = "btnClearFilter";
             btnClearFilter.Size = new System.Drawing.Size(120, 30);
             btnClearFilter.TabIndex = 5;
@@ -376,9 +397,9 @@ namespace KeyEventLogger
             // lblFilterInfo
             //
             lblFilterInfo.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            lblFilterInfo.Location = new System.Drawing.Point(12, 132);
+            lblFilterInfo.Location = new System.Drawing.Point(12, 156);
             lblFilterInfo.Name = "lblFilterInfo";
-            lblFilterInfo.Size = new System.Drawing.Size(252, 62);
+            lblFilterInfo.Size = new System.Drawing.Size(252, 46);
             lblFilterInfo.TabIndex = 6;
             lblFilterInfo.Text = "Filtre yok: tüm kayıtlar gösteriliyor.";
             //
@@ -486,6 +507,8 @@ namespace KeyEventLogger
         private System.Windows.Forms.Button btnApplyFilter;
         private System.Windows.Forms.Button btnClearFilter;
         private System.Windows.Forms.Label lblFilterInfo;
+        private System.Windows.Forms.Label lblEventType;
+        private System.Windows.Forms.ComboBox cmbEventType;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel tsslState;
         private System.Windows.Forms.ToolStripStatusLabel tsslCount;
